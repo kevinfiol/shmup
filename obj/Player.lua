@@ -9,7 +9,7 @@ function Player:new(area, x, y, opts)
     Player.super.new(self, 'Player', area, x, y, opts)
     opts = opts or {}
 
-    self.speed = 1
+    self.speed = 1.6
     self.input = nil
     self.sprite = nil
     self.is_walking = false
@@ -35,10 +35,10 @@ function Player:new(area, x, y, opts)
     if opts.control then
         self.input = baton.new({
             controls = {
-                left = { 'key:left' },
-                right = { 'key:right' },
-                up = { 'key:up' },
-                down = { 'key:down' }
+                left = { 'key:left', 'key:a' },
+                right = { 'key:right', 'key:d' },
+                up = { 'key:up', 'key:w' },
+                down = { 'key:down', 'key:s' }
             }
         })
     end
