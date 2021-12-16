@@ -5,12 +5,11 @@ local Area = require 'engine.Area'
 local Player = require 'obj.Player'
 local Walls = require 'elements.Walls'
 local Clouds = require 'elements.Clouds'
-local Cursor = require 'elements.Cursor'
+local lume = require 'lib.lume'
 
 local Stage = Object:extend()
 
 function Stage:new()
-    self.cursor = nil
     self.player = nil
     self.area = nil
     self.canvas = nil
@@ -19,12 +18,18 @@ function Stage:new()
     self.walls = nil
     self.mouse = { x = 0, y = 0 }
 
+    self.cursor = love.mouse.newCursor('assets/crosshair.png', 16, 16)
+    love.mouse.setCursor(self.cursor)
+
+    -- audio
+    self.music = love.audio.newSource('assets/audio/theme.ogg', 'stream')
+    self.music:setLooping(true)
+    self.music:setVolume(0.5)
+    self.music:play()
+
     -- init area
     self.area = Area(Stage)
     self.canvas = love.graphics.newCanvas(vars.gw, vars.gh)
-    self.cursor = Cursor(self.mouse.x, self.mouse.y)
-    love.mouse.setVisible(false)
-    -- love.mouse.newCursor
 
     -- tilemaps
     self.bg = Clouds()
@@ -38,16 +43,20 @@ function Stage:new()
 end
 
 function Stage:update(dt)
-    if self.cursor then
-        local mouse_x, mouse_y = love.mouse.getPosition()
-        self.mouse.x = mouse_x
-        self.mouse.y = mouse_y
-    end
     if self.area then self.area:update(dt) end
     if self.timer then self.timer:update(dt) end
     if self.player then
         for _, object in ipairs(self.walls.objs) do
             self.player.collider:resolveCollision(object.collider)
+
+            local live_bullets = {}
+            for _, bullet in ipairs(self.player.bullets) do
+                if bullet and not bullet.dead then
+                    bullet.collider:resolveCollision(object.collider)
+                    table.insert(live_bullets, bullet)
+                end
+            end
+            self.player.bullets = live_bullets
         end
     end
 end
@@ -61,7 +70,6 @@ function Stage:draw()
         self.bg:draw()
         self.tiled_map.layers.fg:draw()
         self.area:draw()
-        self.cursor:draw(self.mouse.x / vars.sx, self.mouse.y / vars.sy)
 
         -- draw end
         love.graphics.setCanvas()

@@ -3,7 +3,7 @@ local GameObject = require 'engine.GameObject'
 local Hello = GameObject:extend()
 
 function Hello:new(area, x, y, opts)
-    Hello.super.new(self, area, x, y, opts)
+    Hello.super.new(self, 'Hello', area, x, y, opts)
 
     self.size = opts.size or 16
     self.font = love.graphics.newFont('assets/fonts/m5x7.ttf', 16)

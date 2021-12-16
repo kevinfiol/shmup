@@ -36,6 +36,11 @@ function SimpleCollider:draw()
     end
 end
 
+function SimpleCollider:destroy()
+    self.events = nil
+    self.last = nil
+end
+
 function SimpleCollider:getPosition()
     return self.x, self.y
 end

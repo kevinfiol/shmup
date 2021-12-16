@@ -1,7 +1,10 @@
+local vars = require 'vars'
 local GameObject = require 'engine.GameObject'
 local SimpleCollider = require 'engine.SimpleCollider'
 local baton = require 'lib.baton'
 local sodapop = require 'lib.sodapop'
+local timer = require 'lib.timer'
+local Bullet = require 'obj.Bullet'
 
 local Player = GameObject:extend()
 
@@ -9,16 +12,19 @@ function Player:new(area, x, y, opts)
     Player.super.new(self, 'Player', area, x, y, opts)
     opts = opts or {}
 
-    self.speed = 1.6
+    self.speed = 1.8
     self.input = nil
     self.sprite = nil
     self.is_walking = false
+    self.sounds = {
+        shoot = love.audio.newSource('assets/audio/shoot.wav', 'static')
+    }
 
     self.collider = SimpleCollider(self.x, self.y, 8, 9, {
         debug = false,
         collision_class = opts.collision_class,
         events = {
-            Player =  function (collider, side)
+            Wall = function (collider, side)
                 print('collided with ' .. collider.collision_class .. ' on ' .. side)
             end
         }
@@ -38,10 +44,13 @@ function Player:new(area, x, y, opts)
                 left = { 'key:left', 'key:a' },
                 right = { 'key:right', 'key:d' },
                 up = { 'key:up', 'key:w' },
-                down = { 'key:down', 'key:s' }
+                down = { 'key:down', 'key:s' },
+                shoot = { 'mouse:1' }
             }
         })
     end
+
+    self.bullets = {}
 end
 
 function Player:update(dt)
@@ -52,6 +61,7 @@ function Player:update(dt)
     if self.input then
         self.input:update()
         self:move(dt)
+        self:shoot(dt)
     end
 
     self.sprite:update(dt)
@@ -60,6 +70,32 @@ end
 function Player:draw()
     -- self.collider:draw()
     self.sprite:draw()
+end
+
+function Player:shoot(dt)
+    if self.input:pressed('shoot') then
+        if (self.sounds.shoot:isPlaying()) then
+            self.sounds.shoot:stop()
+        end
+
+        self.sounds.shoot:play()
+        local x, y = love.mouse.getPosition()
+        x = x / vars.sx -- have to scale
+        y = y / vars.sy -- have to scale
+        local pos_x = self.collider.x
+        local pos_y = self.collider.y
+
+        local vector = { x = (x - pos_x), y = (y - pos_y) }
+        local magnitude = math.sqrt((vector.x * vector.x) + (vector.y * vector.y))
+        local unit_vector = { x = vector.x / magnitude, y = vector.y / magnitude }
+
+        local bullet = Bullet(self.area, pos_x, pos_y, {
+            vector = unit_vector
+        })
+
+        table.insert(self.bullets, bullet)
+        self.area:addGameObjects({ bullet })
+    end
 end
 
 function Player:move(dt)
