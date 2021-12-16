@@ -3,7 +3,7 @@ local GameObject = require 'engine.GameObject'
 local SimpleCollider = require 'engine.SimpleCollider'
 local baton = require 'lib.baton'
 local sodapop = require 'lib.sodapop'
-local timer = require 'lib.timer'
+local Timer = require 'lib.timer'
 local Bullet = require 'obj.Bullet'
 
 local Player = GameObject:extend()
@@ -16,6 +16,8 @@ function Player:new(area, x, y, opts)
     self.input = nil
     self.sprite = nil
     self.is_walking = false
+    self.is_shooting = false
+    self.timer = Timer()
     self.sounds = {
         shoot = love.audio.newSource('assets/audio/shoot.wav', 'static')
     }
@@ -25,7 +27,7 @@ function Player:new(area, x, y, opts)
         collision_class = opts.collision_class,
         events = {
             Wall = function (collider, side)
-                print('collided with ' .. collider.collision_class .. ' on ' .. side)
+                -- print('collided with ' .. collider.collision_class .. ' on ' .. side)
             end
         }
     })
@@ -55,6 +57,7 @@ end
 
 function Player:update(dt)
     Player.super.update(self, dt)
+    self.timer:update(dt)
     -- have to call this before self:move
     self.collider:update()
 
@@ -73,28 +76,42 @@ function Player:draw()
 end
 
 function Player:shoot(dt)
-    if self.input:pressed('shoot') then
-        if (self.sounds.shoot:isPlaying()) then
-            self.sounds.shoot:stop()
+    if self.input:down('shoot') then
+        if not self.is_shooting then
+            self.is_shooting = true
+
+            local shoot_fn = function()
+                if (self.sounds.shoot:isPlaying()) then
+                    self.sounds.shoot:stop()
+                end
+
+                self.sounds.shoot:play()
+                local x, y = love.mouse.getPosition()
+                x = x / vars.sx -- have to scale
+                y = y / vars.sy -- have to scale
+                local pos_x = self.collider.x
+                local pos_y = self.collider.y
+
+                local vector = { x = (x - pos_x), y = (y - pos_y) }
+                local magnitude = math.sqrt((vector.x * vector.x) + (vector.y * vector.y))
+                local unit_vector = { x = vector.x / magnitude, y = vector.y / magnitude }
+
+                local bullet = Bullet(self.area, pos_x, pos_y, {
+                    vector = unit_vector
+                })
+
+                table.insert(self.bullets, bullet)
+                self.area:addGameObjects({ bullet })
+            end
+
+            shoot_fn()
+            self.timer:every(0.4, shoot_fn, 'shoot_timer')
         end
-
-        self.sounds.shoot:play()
-        local x, y = love.mouse.getPosition()
-        x = x / vars.sx -- have to scale
-        y = y / vars.sy -- have to scale
-        local pos_x = self.collider.x
-        local pos_y = self.collider.y
-
-        local vector = { x = (x - pos_x), y = (y - pos_y) }
-        local magnitude = math.sqrt((vector.x * vector.x) + (vector.y * vector.y))
-        local unit_vector = { x = vector.x / magnitude, y = vector.y / magnitude }
-
-        local bullet = Bullet(self.area, pos_x, pos_y, {
-            vector = unit_vector
-        })
-
-        table.insert(self.bullets, bullet)
-        self.area:addGameObjects({ bullet })
+    else
+        if self.is_shooting then
+            self.is_shooting = false
+            self.timer:cancel('shoot_timer')
+        end
     end
 end
 

@@ -18,7 +18,7 @@ function Stage:new()
     self.walls = nil
     self.mouse = { x = 0, y = 0 }
 
-    self.cursor = love.mouse.newCursor('assets/crosshair.png', 16, 16)
+    self.cursor = love.mouse.newCursor('assets/crosshair.png', 16 / vars.sx, 16 / vars.sy)
     love.mouse.setCursor(self.cursor)
 
     -- audio
