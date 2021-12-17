@@ -67,9 +67,11 @@ function Stage:draw()
         love.graphics.clear()
         -- draw begin
 
+        camera:attach(0, 0, vars.gw, vars.gh)
         self.bg:draw()
         self.tiled_map.layers.fg:draw()
         self.area:draw()
+        camera:detach()
 
         -- draw end
         love.graphics.setCanvas()

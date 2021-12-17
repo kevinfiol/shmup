@@ -1,12 +1,12 @@
 local vars = require 'vars'
 local utils = require 'engine.utils'
 local RoomManager = require 'engine.RoomManager'
--- local Camera = require 'lib.camera'
+local Camera = require 'lib.camera'
 local baton = require 'lib.baton'
 
 local input
 local rooms
--- camera = Camera() -- global camera
+camera = Camera() -- global camera
 
 local resize = function(s)
     love.window.setMode(s * vars.gw, s * vars.gh)
@@ -30,7 +30,7 @@ end
 
 function love.update(dt)
     if rooms.current_room then rooms.current_room:update(dt) end
-    -- camera:update(dt)
+    camera:update(dt)
 end
 
 function love.draw()

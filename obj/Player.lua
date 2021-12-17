@@ -85,6 +85,7 @@ function Player:shoot(dt)
                     self.sounds.shoot:stop()
                 end
 
+                camera:shake(2, 0.4, 60, 'XY')
                 self.sounds.shoot:play()
                 local x, y = love.mouse.getPosition()
                 x = x / vars.sx -- have to scale
@@ -105,7 +106,7 @@ function Player:shoot(dt)
             end
 
             shoot_fn()
-            self.timer:every(0.4, shoot_fn, 'shoot_timer')
+            self.timer:every(0.36, shoot_fn, 'shoot_timer')
         end
     else
         if self.is_shooting then
