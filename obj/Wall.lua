@@ -7,7 +7,7 @@ function Wall:new(area, x, y, opts)
     Wall.super.new(self, 'Wall', area, x, y, opts)
     opts = opts or {}
 
-    self.collider = SimpleCollider(self.x, self.y, opts.width, opts.height, {
+    self.collider = SimpleCollider(self, self.x, self.y, opts.width, opts.height, {
         collision_class = opts.collision_class or 'Wall'
     })
 end

@@ -18,6 +18,7 @@
 return {
     Player = {},
     Wall = {},
+    Enemy = { 'Enemy' },
     Bullet = { 'Player' },
     Ghost = {'Player', 'Wall'}
 }

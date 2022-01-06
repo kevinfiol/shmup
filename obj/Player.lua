@@ -22,14 +22,9 @@ function Player:new(area, x, y, opts)
         shoot = love.audio.newSource('assets/audio/shoot.wav', 'static')
     }
 
-    self.collider = SimpleCollider(self.x, self.y, 8, 9, {
+    self.collider = SimpleCollider(self, self.x, self.y, 8, 9, {
         debug = false,
-        collision_class = opts.collision_class,
-        events = {
-            Wall = function (collider, side)
-                -- print('collided with ' .. collider.collision_class .. ' on ' .. side)
-            end
-        }
+        collision_class = opts.collision_class
     })
 
     self:setSprite({

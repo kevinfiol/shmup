@@ -5,8 +5,9 @@ local collisions = require 'collisions'
 local SimpleCollider = Object:extend()
 local collide_groups = {}
 
-function SimpleCollider:new(x, y, width, height, opts)
+function SimpleCollider:new(obj, x, y, width, height, opts)
     opts = opts or {}
+    self.obj = obj
     self.x = x
     self.y = y
     self.width = width

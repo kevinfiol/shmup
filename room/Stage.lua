@@ -3,6 +3,7 @@ local cartographer = require 'lib.cartographer'
 local Object = require 'lib.classic'
 local Area = require 'engine.Area'
 local Player = require 'obj.Player'
+local Enemy = require 'obj.Enemy'
 local Walls = require 'elements.Walls'
 local Clouds = require 'elements.Clouds'
 local lume = require 'lib.lume'
@@ -39,7 +40,14 @@ function Stage:new()
 
     -- load player
     self.player = Player(self.area, start.x, start.y, { control = true, collision_class = 'Player' })
-    self.area:addGameObjects({ self.player })
+
+    self.enemy = Enemy(self.area, 200, 200, {
+        collision_class = 'Enemy'
+    })
+
+    self.enemies = { self.enemy }
+
+    self.area:addGameObjects({ self.player, self.enemy })
 end
 
 function Stage:update(dt)
@@ -57,6 +65,16 @@ function Stage:update(dt)
                 end
             end
             self.player.bullets = live_bullets
+        end
+
+        for _, enemy in ipairs(self.enemies) do
+            if enemy and enemy.collider then
+                self.player.collider:resolveCollision(enemy.collider)
+
+                for _, bullet in ipairs(self.player.bullets) do
+                    bullet.collider:resolveCollision(enemy.collider)
+                end
+            end
         end
     end
 end

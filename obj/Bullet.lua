@@ -14,10 +14,15 @@ function Bullet:new(area, x, y, opts)
     self.height = 8
     self.vector = opts.vector
 
-    self.collider = SimpleCollider(self.x, self.y, self.width, self.height, {
+    self.collider = SimpleCollider(self, self.x, self.y, self.width, self.height, {
         collision_class = 'Bullet',
         events = {
             Wall = function ()
+                self:kill()
+            end,
+
+            Enemy = function(collider, side)
+                collider.obj:kill()
                 self:kill()
             end
         }

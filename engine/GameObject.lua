@@ -23,12 +23,14 @@ end
 function GameObject:update(dt)
     if self.timer then self.timer:update(dt) end
 
-    if self.collider.update then
-        self.collider:update()
-    end
+    if self.collider then
+        if self.collider.update then
+            self.collider:update()
+        end
 
-    -- update x,y coordinates based on collider
-    self.x, self.y = self.collider:getPosition()
+        -- update x,y coordinates based on collider
+        self.x, self.y = self.collider:getPosition()
+    end
 end
 
 function GameObject:draw()
