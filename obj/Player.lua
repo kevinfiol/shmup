@@ -1,8 +1,8 @@
 local vars = require 'vars'
 local GameObject = require 'engine.GameObject'
+local Sprite = require 'engine.Sprite'
 local SimpleCollider = require 'engine.SimpleCollider'
 local baton = require 'lib.baton'
-local sodapop = require 'lib.sodapop'
 local Timer = require 'lib.timer'
 local Bullet = require 'obj.Bullet'
 
@@ -23,17 +23,25 @@ function Player:new(area, x, y, opts)
     }
 
     self.collider = SimpleCollider(self, self.x, self.y, 8, 9, {
-        debug = false,
         collision_class = opts.collision_class
     })
 
-    self:setSprite({
+    self.sprite = Sprite(self.x, self.y, {
         image = love.graphics.newImage('assets/tbone.png'),
+        animated = true,
         width = 16,
-        height = 16
+        height = 16,
+        offset = { x = 4, y = 7 },
+        initial = 'idle',
+        animations = {
+            idle = {
+                frames = { {1, 1, 4, 1, 0.1} }
+            },
+            walk = {
+                frames = { {8, 1, 11, 1, 0.1} }
+            }
+        }
     })
-
-    self.sprite.flipX = opts.flipX or false
 
     if opts.control then
         self.input = baton.new({
@@ -62,7 +70,7 @@ function Player:update(dt)
         self:shoot(dt)
     end
 
-    self.sprite:update(dt)
+    self.sprite:update(dt, self.x, self.y)
 end
 
 function Player:draw()
@@ -113,8 +121,8 @@ end
 
 function Player:move(dt)
     if self.input:down('right') then
-        if self.sprite.flipX then
-            self.sprite.flipX = false
+        if self.sprite.flip.x then
+            self.sprite:flipX()
         end
 
         if not self.is_walking then
@@ -124,8 +132,8 @@ function Player:move(dt)
 
         self.collider.x = self.x + self.speed
     elseif self.input:down('left') then
-        if not self.sprite.flipX then
-            self.sprite.flipX = true
+        if not self.sprite.flip.x then
+            self.sprite:flipX()
         end
 
         if not self.is_walking then
@@ -168,36 +176,6 @@ function Player:move(dt)
         self.is_walking = false
         self.sprite:switch('idle')
     end
-end
-
-function Player:setSprite(sprite_config)
-    local width_half = sprite_config.width / 2
-    local height_half = sprite_config.height / 2
-
-    self.sprite = sodapop.newAnimatedSprite(
-        self.x + width_half,
-        self.y + height_half
-    )
-
-    self.sprite:setAnchor(function()
-        return self.x + width_half - 4, self.y + height_half - 7
-    end)
-
-    self.sprite:addAnimation('idle', {
-        image = sprite_config.image,
-        frameWidth = sprite_config.width,
-        frameHeight = sprite_config.height,
-        frames = { {1, 1, 4, 1, 0.1} }
-    })
-
-    self.sprite:addAnimation('walk', {
-        image = sprite_config.image,
-        frameWidth = sprite_config.width,
-        frameHeight = sprite_config.height,
-        frames = {
-            {8, 1, 11, 1, 0.1}
-        }
-    })
 end
 
 return Player
