@@ -1,3 +1,5 @@
-# bytengine
+# shmup
 
-A LOVE2D template inspired by [a327ex's BYTEPATH tutorial](https://github.com/a327ex/BYTEPATH).
+Another proof-of-concept, this time, it's a shmup.
+
+![screenshot](/screenshot.png)
