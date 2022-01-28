@@ -5,6 +5,7 @@ local SimpleCollider = require 'engine.SimpleCollider'
 local baton = require 'lib.baton'
 local Timer = require 'lib.timer'
 local Bullet = require 'obj.Bullet'
+local utils = require 'engine.utils'
 
 local Player = GameObject:extend()
 
@@ -23,7 +24,12 @@ function Player:new(area, x, y, opts)
     }
 
     self.collider = SimpleCollider(self, self.x, self.y, 8, 9, {
-        collision_class = opts.collision_class
+        collision_class = opts.collision_class,
+        events = {
+            Enemy = function ()
+                self:kill()
+            end
+        }
     })
 
     self.sprite = Sprite(self.x, self.y, {
@@ -95,10 +101,7 @@ function Player:shoot(dt)
                 y = y / vars.sy -- have to scale
                 local pos_x = self.collider.x
                 local pos_y = self.collider.y
-
-                local vector = { x = (x - pos_x), y = (y - pos_y) }
-                local magnitude = math.sqrt((vector.x * vector.x) + (vector.y * vector.y))
-                local unit_vector = { x = vector.x / magnitude, y = vector.y / magnitude }
+                local unit_vector = utils.getUnitVector(pos_x, pos_y, x, y)
 
                 local bullet = Bullet(self.area, pos_x, pos_y, {
                     vector = unit_vector

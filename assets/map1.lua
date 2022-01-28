@@ -8,8 +8,8 @@ return {
   height = 34,
   tilewidth = 8,
   tileheight = 8,
-  nextlayerid = 6,
-  nextobjectid = 6,
+  nextlayerid = 7,
+  nextobjectid = 10,
   properties = {},
   tilesets = {
     {
@@ -258,7 +258,48 @@ return {
           type = "",
           shape = "rectangle",
           x = 240,
-          y = 128,
+          y = 120,
+          width = 8,
+          height = 8,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        }
+      }
+    },
+    {
+      type = "objectgroup",
+      draworder = "topdown",
+      id = 6,
+      name = "limits",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      objects = {
+        {
+          id = 6,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 96,
+          y = 32,
+          width = 8,
+          height = 8,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 9,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 384,
+          y = 240,
           width = 8,
           height = 8,
           rotation = 0,

@@ -68,10 +68,19 @@ local random = function(min, max)
     return love.math.random() * (max - min) + min
 end
 
+-- could also use lume.angle + lume.vector
+local getUnitVector = function(x1, y1, x2, y2)
+    local vector = { x = (x2 - x1), y = (y2 - y1) }
+    local magnitude = math.sqrt((vector.x * vector.x) + (vector.y * vector.y))
+    vector.x = vector.x / magnitude
+    vector.y = vector.y / magnitude
+    return vector
+end
+
 return {
     random = random,
-    UUID = UUID,
     collectGarbage = collectGarbage,
     pushRotate = pushRotate,
-    pushRotateScale = pushRotateScale
+    pushRotateScale = pushRotateScale,
+    getUnitVector = getUnitVector
 }

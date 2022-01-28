@@ -11,7 +11,6 @@ function Sprite:new(x, y, config)
     self.flip = { x = false, y = false }
 
     config.offset = config.offset or {}
-    inspect(config)
     local new_fn = config.animated and sodapop.newAnimatedSprite or sodapop.newSprite
     local w_half = config.width / 2
     local h_half = config.height / 2
